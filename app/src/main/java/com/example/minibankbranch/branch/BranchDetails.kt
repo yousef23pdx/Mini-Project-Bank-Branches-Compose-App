@@ -1,4 +1,4 @@
-package com.example.minibankbranch.ui.branch
+package com.example.minibankbranch.branch
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -27,27 +27,26 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.example.minibankbranch.R
-import com.example.minibankbranch.branch.NavRoutesEnum
 import com.example.minibankbranch.data.Branch
-import com.example.minibankbranch.repository.FavoritesManager
 
 @Composable
 fun BranchDetails(
     branch: Branch,
     navController: NavController,
+    viewModel: BranchViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val isFavorite = FavoritesManager.isFavorite(branch.id)
-    Column (
+    val isFavorite = viewModel.isFavorite(branch.id)
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp) // Reduced padding
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .systemBarsPadding(),
     ) {
         Column(
             modifier = Modifier
-                .padding(8.dp) // Reduced internal padding
+                .padding(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -60,7 +59,7 @@ fun BranchDetails(
                         contentDescription = "Back to Branches List"
                     )
                 }
-                IconButton(onClick = { FavoritesManager.toggleFavorite(branch.id) }) {
+                IconButton(onClick = { viewModel.toggleFavorite(branch.id) }) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
@@ -108,7 +107,7 @@ fun BranchDetails(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp) // Slightly reduced height
+                        .height(120.dp)
                         .clickable {
                             Log.d("BranchDetails", "Attempting to open image URL: $imageUrl")
                             try {

@@ -1,6 +1,7 @@
 package com.example.minibankbranch.branch
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,9 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.minibankbranch.data.Branch
 import com.example.minibankbranch.data.BranchType
-import com.example.minibankbranch.repository.BranchRepository
-import com.example.minibankbranch.ui.branch.BranchDetails
-import com.example.minibankbranch.ui.branch.BranchesList
 
 enum class NavRoutesEnum(val value: String) {
     NAV_ROUTE_BRANCHES_LIST("branchesList"),
@@ -20,7 +18,7 @@ enum class NavRoutesEnum(val value: String) {
 @Composable
 fun BranchesNavHost() {
     val navController = rememberNavController()
-    val branches = BranchRepository.branches
+    val viewModel: BranchViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -29,7 +27,7 @@ fun BranchesNavHost() {
         composable(NavRoutesEnum.NAV_ROUTE_BRANCHES_LIST.value) {
             BranchesList(
                 navController = navController,
-                branches = branches,
+                viewModel = viewModel,
                 onBranchClick = { branchId ->
                     navController.navigate("branchDetails/$branchId")
                 }
@@ -40,9 +38,13 @@ fun BranchesNavHost() {
             arguments = listOf(navArgument("branchId") { type = NavType.IntType })
         ) { navEntry ->
             val branchId = navEntry.arguments?.getInt("branchId")
-            val branch = branches.find { branch -> branch.id == branchId }
+            val branch = viewModel.findBranch(branchId ?: -1)
             if (branch != null) {
-                BranchDetails(branch = branch, navController = navController)
+                BranchDetails(
+                    branch = branch,
+                    navController = navController,
+                    viewModel = viewModel
+                )
             } else {
                 BranchDetails(
                     branch = Branch(
@@ -55,7 +57,8 @@ fun BranchesNavHost() {
                         location = null,
                         imageUri = null
                     ),
-                    navController = navController
+                    navController = navController,
+                    viewModel = viewModel
                 )
             }
         }

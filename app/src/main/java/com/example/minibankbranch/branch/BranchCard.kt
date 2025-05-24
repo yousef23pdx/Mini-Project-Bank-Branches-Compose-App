@@ -17,36 +17,35 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.minibankbranch.R
 import com.example.minibankbranch.data.Branch
-import com.example.minibankbranch.repository.FavoritesManager
 
 @Composable
 fun BranchCard(
     branch: Branch,
+    viewModel: BranchViewModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isFavorite = FavoritesManager.isFavorite(branch.id)
+    val isFavorite = viewModel.isFavorite(branch.id)
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(100.dp) // Compact height
+            .height(100.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 4.dp), // Reduced padding
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp), // Reduced internal padding
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // NBK Logo on the left
             Image(
                 painter = painterResource(id = R.drawable.nbk_logo),
                 contentDescription = "NBK Logo",
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(40.dp)
                     .padding(end = 8.dp)
             )
             Column(
@@ -61,7 +60,7 @@ fun BranchCard(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            IconButton(onClick = { FavoritesManager.toggleFavorite(branch.id) }) {
+            IconButton(onClick = { viewModel.toggleFavorite(branch.id) }) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
